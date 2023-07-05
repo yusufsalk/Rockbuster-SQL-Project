@@ -1,0 +1,57 @@
+--The top 10 countries in terms of customer numbers
+SELECT d.country, COUNT (a.customer_id) AS total_customer 
+FROM customer a
+JOIN address b ON a.address_id=b.address_id
+JOIN city c ON b.city_id=c.city_id
+JOIN country d ON c.country_id=d.country_id 
+GROUP BY d.country 
+ORDER BY total_customer DESC 
+LIMIT 10
+
+
+--The top 10 cities within the top 10 countries
+SELECT d.country, c.city,
+COUNT (a.customer_id) AS total_customer
+FROM customer a
+JOIN address b ON a.address_id=b.address_id
+JOIN city c ON b.city_id=c.city_id
+JOIN country d ON c.country_id=d.country_id
+WHERE d.country IN (SELECT d.country FROM customer a
+                    JOIN address b ON a.address_id=b.address_id 
+                    JOIN city c ON b.city_id=c.city_id
+                    JOIN country d ON c.country_id=d.country_id 
+                    GROUP BY d.country
+                    ORDER BY COUNT (a.customer_id) DESC 
+                    LIMIT 10)
+GROUP BY d. country, c.city
+ORDER BY total_customer DESC 
+LIMIT 10
+
+
+--The top 5 customers in the top 10 cities who have paid the highest total amounts to Rockbuster
+CREATE VIEW top_10_cities AS
+SELECT c.city FROM customer a
+JOIN address b ON a.address_id=b.address_id
+JOIN city c ON b.city_id=c.city_id
+JOIN country d ON c.country_id=d.country_id
+WHERE d.country IN (SELECT d.country FROM customer a
+                    JOIN address b ON a.address_id=b.address_id 
+                    JOIN city c ON b.city_id=c.city_id
+                    JOIN country d ON c.country_id=d.country_id 
+                    GROUP BY d.country
+                    ORDER BY COUNT (a.customer_id) DESC 
+                    LIMIT 10)
+GROUP BY d. country, c.city
+ORDER BY COUNT (a.customer_id) DESC 
+LIMIT 10;
+
+SELECT a.customer_id, CONCAT(a.first_name, , a.last_name) AS customer_full_name, 
+d.country, c.city, SUM (e. amount) AS total_amount_paid FROM customer a
+JOIN address b ON a.address_id=b.address_id
+JOIN city c ON b.city_id=c.city_id
+JOIN country d ON c.country_id=d.country_id
+JOIN payment e ON a.customer_id=e.customer_id 
+WHERE c.city IN (SELECT * FROM top_10_cities)
+GROUP BY d.country, c.city, a.customer_id 
+ORDER BY total_amount_paid DESC
+LIMIT 5
