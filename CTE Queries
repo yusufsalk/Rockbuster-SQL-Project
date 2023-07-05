@@ -1,3 +1,5 @@
+Here is SQL queries with a common table expression:
+
 --The average amount paid by the top 5 customers
 WITH top_5_customers_cte (customer_id, customer_full_name, country, city, total_amount_paid) AS 
      (SELECT a.customer_id, CONCAT(a.first_name,' ',a.last_name) AS customer_full_name,
