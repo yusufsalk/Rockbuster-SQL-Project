@@ -14,7 +14,7 @@ WITH top_5_customers_cte (customer_id, customer_full_name, country, city, total_
 SELECT AVG(total_amount_paid) AS avg_amount_paid FROM top_5_customers_cte
 
 
--How many of the top 5 customers are based within each country
+--How many of the top 5 customers are based within each country
 WITH top_5_customers_cte (customer_id, customer_full_name, country, city, total_amount_paid) AS 
      (SELECT a.customer_id, CONCAT(a.first_name,' ',a.last_name) AS customer_full_name,
      d.country, c.city, SUM(e.amount) AS total_amount_paid FROM customer a
